@@ -1,0 +1,187 @@
+{
+  "test_runner_config": {
+    "version": "2.0",
+    "description": "Modern Lua Test Runner Configuration",
+    "default_settings": {
+      "verbose": false,
+      "headless": false,
+      "timeout_seconds": 30,
+      "max_memory_mb": 512,
+      "parallel_execution": false,
+      "continue_on_failure": true,
+      "capture_output": true
+    },
+    "test_discovery": {
+      "search_paths": [
+        "lua_tests/",
+        "../lua_tests/",
+        "../../lua_tests/",
+        "./tests/lua/",
+        "../tests/lua/"
+      ],
+      "file_patterns": [
+        "test_*.lua",
+        "*_test.lua",
+        "test*.lua"
+      ],
+      "exclude_patterns": [
+        "*_disabled.lua",
+        "*.bak",
+        "*.tmp"
+      ]
+    },
+    "categories": {
+      "basic": {
+        "description": "Basic functionality tests",
+        "timeout_seconds": 10,
+        "priority": 1,
+        "required": true
+      },
+      "performance": {
+        "description": "Performance and benchmark tests",
+        "timeout_seconds": 60,
+        "priority": 3,
+        "required": false,
+        "memory_limit_mb": 256,
+        "performance_thresholds": {
+          "max_execution_time": 30.0,
+          "warn_execution_time": 10.0
+        }
+      },
+      "integration": {
+        "description": "System integration tests",
+        "timeout_seconds": 45,
+        "priority": 2,
+        "required": true,
+        "dependencies": ["basic"]
+      },
+      "graphics": {
+        "description": "Graphics and rendering tests",
+        "timeout_seconds": 30,
+        "priority": 2,
+        "required": false,
+        "requires_display": true,
+        "skip_in_headless": true
+      },
+      "console": {
+        "description": "Console output and logging tests",
+        "timeout_seconds": 15,
+        "priority": 1,
+        "required": true
+      },
+      "runtime": {
+        "description": "Runtime system tests",
+        "timeout_seconds": 20,
+        "priority": 1,
+        "required": true,
+        "dependencies": ["basic"]
+      }
+    },
+    "test_suites": {
+      "smoke": {
+        "description": "Quick smoke tests",
+        "categories": ["basic", "console"],
+        "max_execution_time": 60,
+        "tests": [
+          "test_modernized_basic.lua",
+          "test_console_integration.lua"
+        ]
+      },
+      "full": {
+        "description": "Complete test suite",
+        "categories": ["basic", "performance", "integration", "graphics", "console", "runtime"],
+        "max_execution_time": 300
+      },
+      "performance": {
+        "description": "Performance benchmarks only",
+        "categories": ["performance"],
+        "max_execution_time": 180,
+        "require_stable_system": true
+      },
+      "headless": {
+        "description": "Tests that can run without display",
+        "categories": ["basic", "console", "runtime", "integration"],
+        "exclude_categories": ["graphics"],
+        "max_execution_time": 120
+      }
+    },
+    "reporting": {
+      "formats": ["console", "json", "junit"],
+      "output_directory": "test_results/",
+      "include_performance_data": true,
+      "include_memory_usage": true,
+      "include_system_info": true,
+      "generate_html_report": false
+    },
+    "performance_monitoring": {
+      "track_memory_usage": true,
+      "track_execution_time": true,
+      "track_lua_allocations": true,
+      "regression_detection": {
+        "enabled": true,
+        "baseline_file": "performance_baseline.json",
+        "threshold_percent": 20.0
+      }
+    },
+    "error_handling": {
+      "capture_stack_traces": true,
+      "detailed_lua_errors": true,
+      "continue_after_crash": false,
+      "retry_failed_tests": false,
+      "max_retries": 2
+    },
+    "environment": {
+      "lua_globals": {
+        "_TEST_RUNNER_VERSION": "2.0",
+        "_TESTING": true,
+        "_VERBOSE": false,
+        "_HEADLESS": false
+      },
+      "runtime_settings": {
+        "screen_width": 720,
+        "screen_height": 700,
+        "fps_limit": 60,
+        "vsync": true
+      }
+    },
+    "integration": {
+      "ci_cd": {
+        "junit_xml": true,
+        "exit_code_on_failure": true,
+        "progress_updates": true
+      },
+      "ide_support": {
+        "vscode_test_explorer": true,
+        "problem_matcher": true
+      }
+    },
+    "profiles": {
+      "development": {
+        "verbose": true,
+        "timeout_seconds": 120,
+        "continue_on_failure": true,
+        "suite": "smoke"
+      },
+      "ci": {
+        "verbose": false,
+        "headless": true,
+        "timeout_seconds": 300,
+        "continue_on_failure": false,
+        "suite": "full",
+        "parallel_execution": true
+      },
+      "performance": {
+        "verbose": true,
+        "timeout_seconds": 600,
+        "suite": "performance",
+        "require_stable_system": true,
+        "memory_limit_mb": 1024
+      },
+      "quick": {
+        "suite": "smoke",
+        "timeout_seconds": 30,
+        "continue_on_failure": true
+      }
+    }
+  }
+}
